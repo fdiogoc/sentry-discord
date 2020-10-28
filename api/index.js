@@ -11,7 +11,10 @@ const COLORS = {
 module.exports = async (request, response) => {
   try {
     const { body } = request;
-
+    console.log(body);
+    body.event.tags.forEach(([key, value]) => {
+      console.log(key + '--' + value);
+    });
     const payload = {
       username: 'Sentry',
       avatar_url: `https://raw.githubusercontent.com/IanMitchell/sentry-discord/master/sentry-icon.png`,
@@ -24,8 +27,7 @@ module.exports = async (request, response) => {
           timestamp: new Date(body.event.received * 1000).toISOString(),
           color: COLORS[body.level] || COLORS.error,
           footer: {
-            icon_url: 'https://github.com/fluidicon.png',
-            text: 'ianmitchell/sentry-discord',
+            text: body.url,
           },
           fields: [],
         },
@@ -36,6 +38,10 @@ module.exports = async (request, response) => {
       payload.embeds[0].fields.push({
         name: '**User**',
         value: body.event.user.username,
+      });
+      payload.embeds[0].fields.push({
+        name: '**ID**',
+        value: body.event.user.id,
       });
     }
 
